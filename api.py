@@ -1,13 +1,37 @@
 import requests
 from constants import API_KEY
 
-BASE_URL = 'https://api.nomics.com/v1'
+class Coin():
+    def __init__(self, ticker, market):
+        self.base_url = 'https://www.alphavantage.co/query'
+        self.key = API_KEY
+        self.market = market
+        self.ticker = ticker
 
-EX_ENDPT = '&ids=BTC,ETH,XRP&interval=1d,30d&convert=EUR&platform-currency=ETH&per-page=100&page=1'
+    def send_req(self, url):
+        response = requests.get(url)
+        print(response.json())
 
-REQ_URL = f'{BASE_URL}/currencies/ticker?key={API_KEY}&ids=BTC&interval=1d'
+    def print_url(self, url):
+        print(f'\n{url}\n')
 
-print(REQ_URL)
+    def build_url(self, endpoint):
+        url = f'{self.base_url}?{endpoint}&apikey={self.key}'
+        self.print_url(url)
 
-response = requests.get(REQ_URL)
-print(response.json())
+    # Intervals can be 5, 10, 15, 30, 60 for intraday
+    def intraday(self, interval):
+        endpoint = f'function=CRYPTO_INTRADAY&symbol={self.ticker}&market={self.market}&interval={interval}min'
+        self.build_url(endpoint)
+
+    def currentExchangeRate(self):
+        endpoint = f'function=CURRENCY_EXCHANGE_RATE&from_currency={self.ticker}&to_currency={self.market}'
+        self.build_url(endpoint)
+
+
+btc = Coin('BTC', 'USD')
+
+print('')
+btc.intraday(60)
+btc.currentExchangeRate()
+print('')
